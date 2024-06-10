@@ -1,0 +1,48 @@
+from bs4 import BeautifulSoup
+import requests
+import pandas as pd
+
+url= 'https://commoncrawl.org/examples'
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br'
+}
+
+response = requests.get(url, headers=headers)
+
+if response.status_code==200:
+  soup=BeautifulSoup(response.content,'html.parser')
+  ##print(soup.prettify())
+
+  project_item=soup.find_all('div',class_='single-project-item w-dyn-item w-col w-col-4')
+  #print(project_item)
+
+  # columns initialized as list 
+  title = []
+  link = []
+
+  for item in project_item:
+    if item:
+      link_1=item.find('a',class_='single-project-link w-inline-block w-clearfix').get('href')
+      link.append(link_1)
+      # print(link)
+      title_item=item.find('div',class_='project-title')
+      title_1=title_item.text.strip()
+      title.append(title_1)
+      # print(title)
+      # print(link)
+# data = {'Title': title, 'Link': link}
+# df = pd.DataFrame(data)
+# print(df)
+
+columns=['title','link']
+data=[title,link]
+df = pd.DataFrame({columns[0]: data[0], columns[1]: data[1]})
+#print(df.to_string(index=False))
+df.to_csv('//content/sample_data/data.csv',index=False)
+#print(df)
+
+
+
+
